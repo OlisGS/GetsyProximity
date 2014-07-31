@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">GetsyProximity</string>
+    <string name="initialization_app_name">Hello</string>
+    <string name="app_Id">28</string>
+    <string name="app_token">MansPUTqhrvHEzdFmj85S3cVXODZ7Q</string>
+    <string name="app_master_token">wNzj1hBH2dtoqDVLP054psGr8clAYU</string>
+    <string name="base_dev_URL">http://api.proximity.dev2.getsy.co:40900</string>
+    <string name="initialize_URL">/sdk/initialize</string>
+</resources>

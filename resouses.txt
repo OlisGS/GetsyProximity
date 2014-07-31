@@ -1,0 +1,12 @@
+http://tools.android.com/tech-docs/new-build-system/build-system-concepts
+http://tools.android.com/tech-docs/new-build-system/user-guide
+http://www.ibm.com/developerworks/ru/library/j-jtp01246/
+http://www.dataved.ru/2010/05/java.html
+http://habrahabr.ru/post/132500/
+http://www.javaportal.ru/java/articles/referenceclasses.html
+http://dev.getsy.co:8090/display/DEVELOPERS/userLogin
+
+AppName : Hello
+AppId : 28
+AppToken : MansPUTqhrvHEzdFmj85S3cVXODZ7Q
+AppMasterToken : wNzj1hBH2dtoqDVLP054psGr8clAYU
