@@ -25,9 +25,42 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Initialize"
-        android:id="@+id/initialize"
+        android:text="Initialize async"
+        android:id="@+id/initialize_async"
         android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LOGIN  async"
+        android:id="@+id/login_async"
+        android:layout_below="@+id/initialize_async"
+        android:layout_alignLeft="@+id/initialize_async"
+        android:layout_alignStart="@+id/initialize_async"
+        android:layout_alignRight="@+id/initialize_async"
+        android:layout_alignEnd="@+id/initialize_async" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="INITIALIZE"
+        android:id="@+id/initialize"
+        android:layout_below="@+id/login_async"
+        android:layout_alignRight="@+id/login_async"
+        android:layout_alignEnd="@+id/login_async"
+        android:layout_alignLeft="@+id/login_async"
+        android:layout_alignStart="@+id/login_async" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LOGIN"
+        android:id="@+id/login"
+        android:layout_below="@+id/initialize"
+        android:layout_alignRight="@+id/initialize"
+        android:layout_alignEnd="@+id/initialize"
+        android:layout_alignLeft="@+id/initialize"
+        android:layout_alignStart="@+id/initialize" />
 
 </RelativeLayout>

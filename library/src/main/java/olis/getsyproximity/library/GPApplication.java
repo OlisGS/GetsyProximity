@@ -9,6 +9,6 @@ public class GPApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Server.onApplicationCreate(this);
+        GetsyProximityClient.onApplicationCreate(this);
     }
 }
