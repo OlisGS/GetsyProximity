@@ -13,13 +13,17 @@ import olis.getsyproximity.library.Response.BasicResponse;
 import olis.getsyproximity.library.Response.CallbackResponse;
 import olis.getsyproximity.library.Response.InitializeSDKResponse;
 import olis.getsyproximity.library.Response.UserLoginResponse;
-
+/**
+ * Created by OlisG on 02.08.2014.
+ */
 
 public class Main extends Activity implements View.OnClickListener{
     private Button mInitialize;
     private Button mLogin;
     private Button mInitializeAsync;
     private Button mLoginAsync;
+    private Button mGetExperiences;
+    private Button mGetExperiencesAsync;
     private GetsyProximityClient mGetsyProximityClient;
     private String userId;
     @Override
@@ -30,6 +34,8 @@ public class Main extends Activity implements View.OnClickListener{
         mLogin = (Button)findViewById(R.id.login);
         mInitializeAsync = (Button)findViewById(R.id.initialize_async);
         mLoginAsync = (Button)findViewById(R.id.login_async);
+        mGetExperiences = (Button)findViewById(R.id.get_experiences);
+        mGetExperiencesAsync = (Button)findViewById(R.id.get_experiences_async);
         initAllClickListeners();
         mGetsyProximityClient = new GetsyProximityClient();
     }
@@ -39,6 +45,8 @@ public class Main extends Activity implements View.OnClickListener{
         mLogin.setOnClickListener(this);
         mInitializeAsync.setOnClickListener(this);
         mLoginAsync.setOnClickListener(this);
+        mGetExperiences.setOnClickListener(this);
+        mGetExperiencesAsync.setOnClickListener(this);
     }
 
     @Override
@@ -84,6 +92,7 @@ public class Main extends Activity implements View.OnClickListener{
                         }
                     }
                 });
+                break;
             case R.id.login:
                 response = mGetsyProximityClient.userLogin("olis@gmail.com",GetsyProximityClient.LOGIN_TYPE_EMAIL);
                 if(response.isOK()){
@@ -99,6 +108,10 @@ public class Main extends Activity implements View.OnClickListener{
                 }else{
                     Toast.makeText(getApplicationContext(), ((InitializeSDKResponse)response).getStatus(), Toast.LENGTH_LONG).show();
                 }
+                break;
+            case R.id.get_experiences_async:
+                break;
+            case R.id.get_experiences:
                 break;
         }
     }

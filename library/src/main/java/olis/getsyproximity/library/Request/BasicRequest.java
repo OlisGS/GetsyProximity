@@ -8,6 +8,12 @@ public class BasicRequest {
     final String loginType;
     final String appId;
     final String appToken;
+    public BasicRequest(){
+        this.userId = null;
+        this.loginType = null;
+        this.appId = null;
+        this.appToken = null;
+    }
     public BasicRequest(String userId) {
         this.userId = userId;
         this.loginType = null;

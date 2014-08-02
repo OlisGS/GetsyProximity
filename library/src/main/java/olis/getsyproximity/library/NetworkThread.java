@@ -1,9 +1,12 @@
 package olis.getsyproximity.library;
 
 import olis.getsyproximity.library.Request.BasicRequest;
+import olis.getsyproximity.library.Request.ExperiencesRequest;
 import olis.getsyproximity.library.Request.InitializeSDKRequest;
 import olis.getsyproximity.library.Request.UserLoginRequest;
 import olis.getsyproximity.library.Response.BasicResponse;
+import olis.getsyproximity.library.RestAPIInterfaces.RestAPIGETInterfaces;
+import olis.getsyproximity.library.RestAPIInterfaces.RestAPIPOSTInterfaces;
 import retrofit.RestAdapter;
 
 /**
@@ -20,12 +23,16 @@ public class NetworkThread extends Thread{
     @Override
     public void run() {
         if(request instanceof InitializeSDKRequest) {
-            RestAPIInterfaces.InitializeSDKInterface initializeInterface = restAdapter.create(RestAPIInterfaces.InitializeSDKInterface.class);
+            RestAPIPOSTInterfaces.InitializeSDKInterface initializeInterface = restAdapter.create(RestAPIPOSTInterfaces.InitializeSDKInterface.class);
             basicResponse = initializeInterface.initialize(request);
         }
         else if(request instanceof UserLoginRequest) {
-            RestAPIInterfaces.UserLoginInterface userLoginInterface = restAdapter.create(RestAPIInterfaces.UserLoginInterface.class);
+            RestAPIPOSTInterfaces.UserLoginInterface userLoginInterface = restAdapter.create(RestAPIPOSTInterfaces.UserLoginInterface.class);
             basicResponse = userLoginInterface.userLogin(request);
+        }
+        else if(request instanceof ExperiencesRequest) {
+            RestAPIGETInterfaces.GetExperiences getExperiencesInterface = restAdapter.create(RestAPIGETInterfaces.GetExperiences.class);
+            basicResponse = getExperiencesInterface.getExperiences();
         }
     }
     public void sendRequest() {

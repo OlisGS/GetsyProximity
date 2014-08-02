@@ -1,4 +1,4 @@
-package olis.getsyproximity.library;
+package olis.getsyproximity.library.RestAPIInterfaces;
 
 import olis.getsyproximity.library.Request.BasicRequest;
 import olis.getsyproximity.library.Request.InitializeSDKRequest;
@@ -12,7 +12,7 @@ import retrofit.http.POST;
 /**
  * Created by GTO on 02.08.2014.
  */
-public class RestAPIInterfaces {
+public class RestAPIPOSTInterfaces {
     public interface AsyncInitializeSDKInterface {
         @POST("/sdk/initialize")
         void initialize(@Body InitializeSDKRequest initRequest, Callback<InitializeSDKResponse> callback);

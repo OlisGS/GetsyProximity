@@ -4,11 +4,15 @@ import android.content.Context;
 import android.util.Log;
 
 import olis.getsyproximity.R;
+import olis.getsyproximity.library.Request.ExperiencesRequest;
 import olis.getsyproximity.library.Request.InitializeSDKRequest;
 import olis.getsyproximity.library.Request.UserLoginRequest;
 import olis.getsyproximity.library.Response.CallbackResponse;
+import olis.getsyproximity.library.Response.ExperiencesResponse;
 import olis.getsyproximity.library.Response.InitializeSDKResponse;
 import olis.getsyproximity.library.Response.UserLoginResponse;
+import olis.getsyproximity.library.RestAPIInterfaces.RestAPIGETInterfaces;
+import olis.getsyproximity.library.RestAPIInterfaces.RestAPIPOSTInterfaces;
 import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
@@ -16,7 +20,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 /**
- * Created by Olis on 29.07.2014.
+ * Created by OlisG on 29.07.2014.
  */
 public class GetsyProximityClient {
 
@@ -70,8 +74,15 @@ public class GetsyProximityClient {
         return response;
     }
 
+    public ExperiencesResponse getExperiences(){
+        NetworkThread networkThread = new NetworkThread(new ExperiencesRequest(), restAdapter);
+        networkThread.sendRequest();
+        ExperiencesResponse response = (ExperiencesResponse) networkThread.getResponse();
+        return response;
+    }
+
     public void asyncUserLogin(String userId, String emailOrPhoneNumber, final CallbackResponse response) {
-        RestAPIInterfaces.AsyncUserLoginInterface userLoginInterface = restAdapter.create(RestAPIInterfaces.AsyncUserLoginInterface.class);
+        RestAPIPOSTInterfaces.AsyncUserLoginInterface userLoginInterface = restAdapter.create(RestAPIPOSTInterfaces.AsyncUserLoginInterface.class);
         userLoginInterface.userLogin(new UserLoginRequest(userId, emailOrPhoneNumber), new Callback<UserLoginResponse>() {
             @Override
             public void success(UserLoginResponse res, Response rawResponse) {
@@ -95,7 +106,7 @@ public class GetsyProximityClient {
     }
 
     public void asyncInitializeSDK(final CallbackResponse response) {
-        RestAPIInterfaces.AsyncInitializeSDKInterface initializeInterface = restAdapter.create(RestAPIInterfaces.AsyncInitializeSDKInterface.class);
+        RestAPIPOSTInterfaces.AsyncInitializeSDKInterface initializeInterface = restAdapter.create(RestAPIPOSTInterfaces.AsyncInitializeSDKInterface.class);
         initializeInterface.initialize(new InitializeSDKRequest(sAppId, sAppToken), new Callback<InitializeSDKResponse>() {
             @Override
             public void success(InitializeSDKResponse res, retrofit.client.Response rawResponse) {
@@ -116,6 +127,30 @@ public class GetsyProximityClient {
                 InitializeSDKResponse emptyResponse = new InitializeSDKResponse();
                 emptyResponse.setStatus(error.getMessage());
                 response.callback(emptyResponse);
+            }
+        });
+    }
+
+    public void asyncGetExperiences(final CallbackResponse response){
+        RestAPIGETInterfaces.AsyncGetExperiences getExperiencesInterface = restAdapter.create(RestAPIGETInterfaces.AsyncGetExperiences.class);
+        getExperiencesInterface.getExperiences(new Callback<ExperiencesResponse>() {
+            @Override
+            public void success(ExperiencesResponse res, Response rawResponse) {
+                try {
+                    response.callback(res);
+                } catch (ClassCastException e) {
+                    ExperiencesResponse emptyResponse = new ExperiencesResponse();
+                    res.setStatus(e.getMessage());
+                    response.callback(emptyResponse);
+                    Log.e(TAG,e.getMessage());
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                ExperiencesResponse res = new ExperiencesResponse();
+                res.setStatus(error.getMessage());
+                response.callback(res);
             }
         });
     }

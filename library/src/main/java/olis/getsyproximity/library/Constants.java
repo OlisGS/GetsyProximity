@@ -1,7 +1,7 @@
 package olis.getsyproximity.library;
 
 /**
- * Created by GTO on 02.08.2014.
+ * Created by OlisG on 02.08.2014.
  */
 public class Constants {
     public static final String STATUS_OK = "ok";
