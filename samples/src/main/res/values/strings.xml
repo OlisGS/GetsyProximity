@@ -5,4 +5,11 @@
     <string name="hello_world">Hello I am Getsy sample!</string>
     <string name="action_settings">Settings</string>
 
+    <string name="base_dev_URL">http://api.proximity.dev2.getsy.co:40900</string>
+
+    <string name="initialization_app_name">Hello</string>
+    <string name="app_token">MansPUTqhrvHEzdFmj85S3cVXODZ7Q</string>
+    <string name="app_master_token">wNzj1hBH2dtoqDVLP054psGr8clAYU</string>
+
+    <integer name="app_Id">28</integer>
 </resources>

@@ -85,4 +85,26 @@
         android:layout_alignLeft="@+id/get_experiences_async"
         android:layout_alignStart="@+id/get_experiences_async" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sync User"
+        android:id="@+id/sync_user"
+        android:layout_below="@+id/get_experiences"
+        android:layout_alignRight="@+id/get_experiences"
+        android:layout_alignEnd="@+id/get_experiences"
+        android:layout_alignLeft="@+id/get_experiences"
+        android:layout_alignStart="@+id/get_experiences" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sync user async"
+        android:id="@+id/sync_user_async"
+        android:layout_below="@+id/sync_user"
+        android:layout_alignRight="@+id/sync_user"
+        android:layout_alignEnd="@+id/sync_user"
+        android:layout_alignLeft="@+id/sync_user"
+        android:layout_alignStart="@+id/sync_user" />
+
 </RelativeLayout>

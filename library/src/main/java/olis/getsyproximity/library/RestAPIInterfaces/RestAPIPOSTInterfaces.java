@@ -1,12 +1,11 @@
 package olis.getsyproximity.library.RestAPIInterfaces;
 
 import olis.getsyproximity.library.Request.BasicRequest;
-import olis.getsyproximity.library.Request.InitializeSDKRequest;
-import olis.getsyproximity.library.Request.UserLoginRequest;
 import olis.getsyproximity.library.Response.InitializeSDKResponse;
 import olis.getsyproximity.library.Response.UserLoginResponse;
 import retrofit.Callback;
 import retrofit.http.Body;
+import retrofit.http.Header;
 import retrofit.http.POST;
 
 /**
@@ -15,12 +14,12 @@ import retrofit.http.POST;
 public class RestAPIPOSTInterfaces {
     public interface AsyncInitializeSDKInterface {
         @POST("/sdk/initialize")
-        void initialize(@Body InitializeSDKRequest initRequest, Callback<InitializeSDKResponse> callback);
+        void initialize(@Body BasicRequest initRequest, Callback<InitializeSDKResponse> callback);
     }
 
     public interface AsyncUserLoginInterface {
         @POST("/sdk/user/login")
-        void userLogin(@Body UserLoginRequest userLoginRequest, Callback<UserLoginResponse> callback);
+        void userLogin(@Header("X-Application-Token") String xApplicationTokenHeader, @Body BasicRequest userLoginRequest, Callback<UserLoginResponse> callback);
     }
 
     public interface InitializeSDKInterface {
@@ -30,6 +29,6 @@ public class RestAPIPOSTInterfaces {
 
     public interface UserLoginInterface {
         @POST("/sdk/user/login")
-        UserLoginResponse userLogin(@Body BasicRequest userLoginRequest);
+        UserLoginResponse userLogin(@Header("X-Application-Token") String xApplicationTokenHeader, @Body BasicRequest userLoginRequest);
     }
 }

@@ -210,9 +210,12 @@ public class BasicResponse {
         }
     }
 
-    public boolean isOK(){
-        if(status.equals(Constants.STATUS_OK)){
+    public boolean isOK() {
+        if(status != null && status.equals(Constants.STATUS_OK)) {
             return true;
-        }else{return false;}
+        }
+        else {
+            return false;
+        }
     }
 }

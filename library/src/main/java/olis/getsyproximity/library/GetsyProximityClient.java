@@ -6,10 +6,12 @@ import android.util.Log;
 import olis.getsyproximity.R;
 import olis.getsyproximity.library.Request.ExperiencesRequest;
 import olis.getsyproximity.library.Request.InitializeSDKRequest;
+import olis.getsyproximity.library.Request.SyncUserRequest;
 import olis.getsyproximity.library.Request.UserLoginRequest;
 import olis.getsyproximity.library.Response.CallbackResponse;
 import olis.getsyproximity.library.Response.ExperiencesResponse;
 import olis.getsyproximity.library.Response.InitializeSDKResponse;
+import olis.getsyproximity.library.Response.SyncUserResponse;
 import olis.getsyproximity.library.Response.UserLoginResponse;
 import olis.getsyproximity.library.RestAPIInterfaces.RestAPIGETInterfaces;
 import olis.getsyproximity.library.RestAPIInterfaces.RestAPIPOSTInterfaces;
@@ -25,20 +27,25 @@ import retrofit.client.Response;
 public class GetsyProximityClient {
 
     private static String sBaseDevURL;
-    private static String sAppToken;
-    private static String sAppId;
-    private String TAG = "getsyproximity.library.ServerResponse";
-    private String mInstanceToken = null;
+    private String TAG = "getsyproximityclient";
+    public static String sAppToken;
+    public static int sAppId;
 
     public static final String LOGIN_TYPE_EMAIL = "email";
     public static final String LOGIN_TYPE_PHONE = "phone";
+    public static final String GENDER_FEMALE = "f";
+    public static final String GENDER_MALE = "m";
 
-    RestAdapter restAdapter = new RestAdapter.Builder()
+
+    private RestAdapter restAdapter = new RestAdapter.Builder()
             .setEndpoint(sBaseDevURL)
             .build();
 
 
-    
+    private static class SingletonHolder {
+        private final static GetsyProximityClient singleton = new GetsyProximityClient();
+    }
+
     private void addXApplicationTokenHeader(final String instanceToken){
         RequestInterceptor requestInterceptor = new RequestInterceptor() {
             @Override
@@ -52,112 +59,175 @@ public class GetsyProximityClient {
                 .build();
     }
 
-    public UserLoginResponse userLogin(String userId, String loginType) {
-        if(mInstanceToken != null){
-            NetworkThread networkThread = new NetworkThread(new UserLoginRequest(userId, loginType), restAdapter);
+    public synchronized GetsyProximityClient getInstance(){
+        return SingletonHolder.singleton;
+    }
+
+    public SyncUserResponse syncUser (String firstName, String lastName, String gender, String birthday, String instanceToken){
+        SyncUserResponse response;
+        try {
+            Utils.validateSyncUserParameters(firstName, lastName, gender, birthday, instanceToken);
+            NetworkThread networkThread = new NetworkThread(new SyncUserRequest(firstName, lastName, gender, birthday), restAdapter, instanceToken);
             networkThread.sendRequest();
-            UserLoginResponse response = (UserLoginResponse) networkThread.getResponse();
+            response = (SyncUserResponse) networkThread.getResponse();
             return response;
-        } else {
-            UserLoginResponse emptyResponse = new UserLoginResponse();
-            emptyResponse.setStatus(Constants.BAD_INSTANCE_TOKEN);
-            return emptyResponse;
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, e.getMessage());
+            response = new SyncUserResponse();
+            response.setStatus(e.getMessage());
+            return response;
+        }
+    }
+
+    public UserLoginResponse userLogin (String userId, String loginType, String instanceToken){
+        UserLoginResponse response;
+        try {
+            Utils.validateUserLoginParameters(userId, loginType, instanceToken);
+            NetworkThread networkThread = new NetworkThread(new UserLoginRequest(userId, loginType), restAdapter, instanceToken);
+            networkThread.sendRequest();
+            response = (UserLoginResponse) networkThread.getResponse();
+            return response;
+        } catch (IllegalArgumentException e ) {
+            Log.e(TAG, e.getMessage());
+            response = new UserLoginResponse();
+            response.setStatus(e.getMessage());
+            return response;
         }
     }
     
-    public InitializeSDKResponse initializeSDK() {
-        NetworkThread networkThread = new NetworkThread(new InitializeSDKRequest(sAppId, sAppToken), restAdapter);
-        networkThread.sendRequest();
-        InitializeSDKResponse response = (InitializeSDKResponse) networkThread.getResponse();
-        mInstanceToken = response.getInstanceToken();
-        addXApplicationTokenHeader(mInstanceToken);
-        return response;
+    public InitializeSDKResponse initializeSDK (int appId, String appToken){
+        InitializeSDKResponse response;
+        try {
+            Utils.validateInitializeSDKParameters(appId, appToken);
+            NetworkThread networkThread = new NetworkThread(new InitializeSDKRequest(appId, appToken), restAdapter);
+            networkThread.sendRequest();
+            response = (InitializeSDKResponse) networkThread.getResponse();
+            return response;
+        } catch (IllegalArgumentException e ) {
+            Log.e(TAG, e.getMessage());
+            response = new InitializeSDKResponse();
+            response.setStatus(e.getMessage());
+            return response;
+        }
     }
 
-    public ExperiencesResponse getExperiences(){
-        NetworkThread networkThread = new NetworkThread(new ExperiencesRequest(), restAdapter);
-        networkThread.sendRequest();
-        ExperiencesResponse response = (ExperiencesResponse) networkThread.getResponse();
-        return response;
+    public ExperiencesResponse getExperiences(String instanceToken){
+        ExperiencesResponse response;
+        try {
+            Utils.validateGetExperiencesParameters(instanceToken);
+            NetworkThread networkThread = new NetworkThread(new ExperiencesRequest(), restAdapter, instanceToken);
+            networkThread.sendRequest();
+            response = (ExperiencesResponse) networkThread.getResponse();
+            return response;
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, e.getMessage());
+            response = new ExperiencesResponse();
+            response.setStatus(e.getMessage());
+            return response;
+        }
     }
 
-    public void asyncUserLogin(String userId, String emailOrPhoneNumber, final CallbackResponse response) {
-        RestAPIPOSTInterfaces.AsyncUserLoginInterface userLoginInterface = restAdapter.create(RestAPIPOSTInterfaces.AsyncUserLoginInterface.class);
-        userLoginInterface.userLogin(new UserLoginRequest(userId, emailOrPhoneNumber), new Callback<UserLoginResponse>() {
-            @Override
-            public void success(UserLoginResponse res, Response rawResponse) {
-                try {
+    public void asyncUserLogin(String userId, String loginType, String instanceToken, final CallbackResponse<UserLoginResponse> response) {
+        try {
+            Utils.validateUserLoginParameters(userId, loginType, instanceToken);
+            RestAPIPOSTInterfaces.AsyncUserLoginInterface userLoginInterface = restAdapter.create(RestAPIPOSTInterfaces.AsyncUserLoginInterface.class);
+            userLoginInterface.userLogin(instanceToken, new UserLoginRequest(userId, loginType), new Callback<UserLoginResponse>() {
+                @Override
+                public void success(UserLoginResponse res, Response rawResponse) {
                     response.callback(res);
-                } catch (ClassCastException e) {
-                    UserLoginResponse emptyResponse = new UserLoginResponse();
-                    res.setStatus(e.getMessage());
-                    response.callback(emptyResponse);
-                    Log.e(TAG,e.getMessage());
                 }
-            }
 
-            @Override
-            public void failure(RetrofitError error) {
-                UserLoginResponse res = new UserLoginResponse();
-                res.setStatus(error.getMessage());
-                response.callback(res);
-            }
-        });
+                @Override
+                public void failure(RetrofitError error) {
+                    UserLoginResponse res = new UserLoginResponse();
+                    res.setStatus(error.getMessage());
+                    response.callback(res);
+                }
+            });
+        } catch (IllegalArgumentException e) {
+            UserLoginResponse res = new UserLoginResponse();
+            res.setStatus(e.getMessage());
+            response.callback(res);
+            Log.e(TAG, e.getMessage());
+        }
     }
 
-    public void asyncInitializeSDK(final CallbackResponse response) {
-        RestAPIPOSTInterfaces.AsyncInitializeSDKInterface initializeInterface = restAdapter.create(RestAPIPOSTInterfaces.AsyncInitializeSDKInterface.class);
-        initializeInterface.initialize(new InitializeSDKRequest(sAppId, sAppToken), new Callback<InitializeSDKResponse>() {
-            @Override
-            public void success(InitializeSDKResponse res, retrofit.client.Response rawResponse) {
-                try {
-                    mInstanceToken = res.getInstanceToken();
-                    addXApplicationTokenHeader(mInstanceToken);
+    public void asyncInitializeSDK(int appId, String appToken, final CallbackResponse<InitializeSDKResponse> response) {
+        try {
+            Utils.validateInitializeSDKParameters(appId, appToken);
+            RestAPIPOSTInterfaces.AsyncInitializeSDKInterface initializeInterface = restAdapter.create(RestAPIPOSTInterfaces.AsyncInitializeSDKInterface.class);
+            initializeInterface.initialize(new InitializeSDKRequest(appId, appToken), new Callback<InitializeSDKResponse>() {
+                @Override
+                public void success(InitializeSDKResponse res, retrofit.client.Response rawResponse) {
                     response.callback(res);
-                } catch (ClassCastException e) {
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
                     InitializeSDKResponse emptyResponse = new InitializeSDKResponse();
-                    res.setStatus(e.getMessage());
+                    emptyResponse.setStatus(error.getMessage());
                     response.callback(emptyResponse);
-                    Log.e(TAG,e.getMessage());
                 }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                InitializeSDKResponse emptyResponse = new InitializeSDKResponse();
-                emptyResponse.setStatus(error.getMessage());
-                response.callback(emptyResponse);
-            }
-        });
+            });
+        } catch (IllegalArgumentException e ) {
+            InitializeSDKResponse emptyResponse = new InitializeSDKResponse();
+            emptyResponse.setStatus(e.getMessage());
+            response.callback(emptyResponse);
+            Log.e(TAG, e.getMessage());
+        }
     }
 
-    public void asyncGetExperiences(final CallbackResponse response){
-        RestAPIGETInterfaces.AsyncGetExperiences getExperiencesInterface = restAdapter.create(RestAPIGETInterfaces.AsyncGetExperiences.class);
-        getExperiencesInterface.getExperiences(new Callback<ExperiencesResponse>() {
-            @Override
-            public void success(ExperiencesResponse res, Response rawResponse) {
-                try {
+    public void asyncGetExperiences(String instanceToken, final CallbackResponse<ExperiencesResponse> response) {
+        try {
+            Utils.validateGetExperiencesParameters(instanceToken);
+            RestAPIGETInterfaces.AsyncGetExperiences getExperiencesInterface = restAdapter.create(RestAPIGETInterfaces.AsyncGetExperiences.class);
+            getExperiencesInterface.getExperiences(instanceToken, new Callback<ExperiencesResponse>() {
+                @Override
+                public void success(ExperiencesResponse res, Response rawResponse) {
                     response.callback(res);
-                } catch (ClassCastException e) {
-                    ExperiencesResponse emptyResponse = new ExperiencesResponse();
-                    res.setStatus(e.getMessage());
-                    response.callback(emptyResponse);
-                    Log.e(TAG,e.getMessage());
                 }
-            }
 
-            @Override
-            public void failure(RetrofitError error) {
-                ExperiencesResponse res = new ExperiencesResponse();
-                res.setStatus(error.getMessage());
-                response.callback(res);
-            }
-        });
+                @Override
+                public void failure(RetrofitError error) {
+                    ExperiencesResponse res = new ExperiencesResponse();
+                    res.setStatus(error.getMessage());
+                    response.callback(res);
+                }
+            });
+        } catch (IllegalArgumentException e ) {
+            ExperiencesResponse res = new ExperiencesResponse();
+            res.setStatus(e.getMessage());
+            response.callback(res);
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
+    public void asyncSyncUser(String firstName, String lastName, String gender, String birthday, String instanceToken, final CallbackResponse<SyncUserResponse> response) {
+        try {
+            Utils.validateSyncUserParameters(firstName, lastName, gender, birthday, instanceToken);
+            RestAPIGETInterfaces.AsyncSyncUser asyncSyncUser = restAdapter.create(RestAPIGETInterfaces.AsyncSyncUser.class);
+            asyncSyncUser.syncUser(instanceToken, new SyncUserRequest(firstName, lastName, gender, birthday), new Callback<SyncUserResponse>() {
+                @Override
+                public void success(SyncUserResponse res, Response rawResponse) {
+                    response.callback(res);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    SyncUserResponse res = new SyncUserResponse();
+                    res.setStatus(error.getMessage());
+                    response.callback(res);
+                }
+            });
+        } catch (IllegalArgumentException e ) {
+            SyncUserResponse res = new SyncUserResponse();
+            res.setStatus(e.getMessage());
+            response.callback(res);
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     public static void onApplicationCreate(Context ctx){
         sBaseDevURL = ctx.getResources().getString(R.string.base_dev_URL);
-        sAppToken = ctx.getResources().getString(R.string.app_token);
-        sAppId = ctx.getResources().getString(R.string.app_Id);
     }
 }
