@@ -59,7 +59,7 @@ public class GetsyProximityClient {
                 .build();
     }
 
-    public synchronized GetsyProximityClient getInstance(){
+    public static synchronized GetsyProximityClient getInstance(){
         return SingletonHolder.singleton;
     }
 

@@ -7,6 +7,7 @@ import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.Header;
+import retrofit.http.POST;
 
 /**
  * Created by GTO on 03.08.2014.
@@ -23,12 +24,12 @@ public class RestAPIGETInterfaces {
     }
 
     public interface AsyncSyncUser {
-        @GET("/sdk/user/sync")
+        @POST("/sdk/user/sync")
         void syncUser(@Header("X-Application-Token") String xApplicationTokenHeader, @Body BasicRequest syncUserRequest, Callback<SyncUserResponse> callback);
     }
 
     public interface SyncUser {
-        @GET("/sdk/user/sync")
+        @POST("/sdk/user/sync")
         SyncUserResponse syncUser(@Header("X-Application-Token") String xApplicationTokenHeader, @Body BasicRequest syncUserRequest);
     }
 

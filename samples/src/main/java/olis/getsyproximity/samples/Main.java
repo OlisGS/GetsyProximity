@@ -30,24 +30,27 @@ public class Main extends Activity implements View.OnClickListener{
     private Button mSyncUserAsync;
     private GetsyProximityClient mGetsyProximityClient;
     private String userId = "olis@gmail.com";
-    private String mInstanceToken;
+    public static String sInstanceToken;
+
     public static String sAppToken;
     public static int sAppId;
-    private final int DIALOG = 1;
+
+    Dialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mInitialize = (Button)findViewById(R.id.initialize);
-        mLogin = (Button)findViewById(R.id.login);
-        mInitializeAsync = (Button)findViewById(R.id.initialize_async);
-        mLoginAsync = (Button)findViewById(R.id.login_async);
-        mGetExperiences = (Button)findViewById(R.id.get_experiences);
-        mGetExperiencesAsync = (Button)findViewById(R.id.get_experiences_async);
+        mInitialize = (Button) findViewById(R.id.initialize);
+        mLogin = (Button) findViewById(R.id.login);
+        mInitializeAsync = (Button) findViewById(R.id.initialize_async);
+        mLoginAsync = (Button) findViewById(R.id.login_async);
+        mGetExperiences = (Button) findViewById(R.id.get_experiences);
+        mGetExperiencesAsync = (Button) findViewById(R.id.get_experiences_async);
         mSyncUser = (Button) findViewById(R.id.sync_user);
         mSyncUserAsync = (Button) findViewById(R.id.sync_user_async);
+        dialog = new Dialog(this);
         initAllClickListeners();
-        mGetsyProximityClient = new GetsyProximityClient();
+        mGetsyProximityClient = GetsyProximityClient.getInstance();
     }
 
     private void initAllClickListeners(){
@@ -90,7 +93,7 @@ public class Main extends Activity implements View.OnClickListener{
      @Override
      protected void onPostExecute(Void aVoid) {
          if(resp.isOK()){
-             mInstanceToken = ((InitializeSDKResponse)resp).getInstanceToken();
+             sInstanceToken = ((InitializeSDKResponse)resp).getInstanceToken();
              Toast.makeText(getApplicationContext(), ((InitializeSDKResponse)resp).getStatus(), Toast.LENGTH_LONG).show();
          }else{
              Toast.makeText(getApplicationContext(), ((InitializeSDKResponse)resp).getStatus(), Toast.LENGTH_LONG).show();
@@ -107,7 +110,7 @@ public class Main extends Activity implements View.OnClickListener{
                     @Override
                     public void callback(InitializeSDKResponse response) {
                         if(response.isOK()){
-                            mInstanceToken = response.getInstanceToken();
+                            sInstanceToken = response.getInstanceToken();
                             Toast.makeText(getApplicationContext(), response.getStatus(), Toast.LENGTH_LONG).show();
                         }else{
                             Toast.makeText(getApplicationContext(), response.getStatus(), Toast.LENGTH_LONG).show();
@@ -116,7 +119,7 @@ public class Main extends Activity implements View.OnClickListener{
                 });
                 break;
             case R.id.login_async:
-                mGetsyProximityClient.asyncUserLogin(userId, GetsyProximityClient.LOGIN_TYPE_EMAIL, mInstanceToken, new CallbackResponse<UserLoginResponse>() {
+                mGetsyProximityClient.asyncUserLogin(userId, GetsyProximityClient.LOGIN_TYPE_EMAIL, sInstanceToken, new CallbackResponse<UserLoginResponse>() {
                     @Override
                     public void callback(UserLoginResponse response) {
                         if(response.isOK()){
@@ -128,46 +131,50 @@ public class Main extends Activity implements View.OnClickListener{
                 });
                 break;
             case R.id.login:
-                basicResponse = mGetsyProximityClient.userLogin(userId, GetsyProximityClient.LOGIN_TYPE_EMAIL, mInstanceToken);
-                if(basicResponse.isOK()){
+                basicResponse = mGetsyProximityClient.userLogin(userId, GetsyProximityClient.LOGIN_TYPE_EMAIL, sInstanceToken);
+                if(basicResponse.isOK()) {
                     Toast.makeText(getApplicationContext(), ((UserLoginResponse)basicResponse).getStatus(), Toast.LENGTH_LONG).show();
-                }else{
+                } else {
                     Toast.makeText(getApplicationContext(), ((UserLoginResponse)basicResponse).getStatus(), Toast.LENGTH_LONG).show();
                 }
                 break;
             case R.id.initialize:
                 basicResponse = mGetsyProximityClient.initializeSDK(sAppId, sAppToken);
-                mInstanceToken = ((InitializeSDKResponse)basicResponse).getInstanceToken();
+                if(basicResponse.isOK()) {
+                    Toast.makeText(getApplicationContext(), ((InitializeSDKResponse)basicResponse).getStatus(), Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), ((InitializeSDKResponse)basicResponse).getStatus(), Toast.LENGTH_LONG).show();
+                }
+                sInstanceToken = ((InitializeSDKResponse)basicResponse).getInstanceToken();
                 break;
             case R.id.get_experiences_async:
-                 mGetsyProximityClient.asyncGetExperiences(mInstanceToken, new CallbackResponse<ExperiencesResponse>() {
+                 mGetsyProximityClient.asyncGetExperiences(sInstanceToken, new CallbackResponse<ExperiencesResponse>() {
                     @Override
                     public void callback(ExperiencesResponse response) {
-                        if(response.isOK()){
+                        if(response.isOK()) {
                             Toast.makeText(getApplicationContext(), response.getStatus(), Toast.LENGTH_LONG).show();
-                        }else{
+                        } else {
                             Toast.makeText(getApplicationContext(), response.getStatus(), Toast.LENGTH_LONG).show();
                         }
                     }
                 });
                 break;
             case R.id.get_experiences:
-                basicResponse = mGetsyProximityClient.getExperiences(mInstanceToken);
-                if(basicResponse.isOK()){
+                basicResponse = mGetsyProximityClient.getExperiences(sInstanceToken);
+                if(basicResponse.isOK()) {
                     Toast.makeText(getApplicationContext(), ((ExperiencesResponse)basicResponse).getStatus(), Toast.LENGTH_LONG).show();
-                }else{
+                } else {
                     Toast.makeText(getApplicationContext(), ((ExperiencesResponse)basicResponse).getStatus(), Toast.LENGTH_LONG).show();
                 }
                 break;
             case R.id.sync_user:
-                Dialog dialog = new Dialog();
-                dialog.show(getFragmentManager(), "ds");
+                dialog.show();
+
                 break;
             case R.id.sync_user_async:
-                Dialog dialog1 = new Dialog();
-                dialog1.show(getFragmentManager(), "ds");
+                dialog.show();
+
                 break;
         }
     }
-
 }

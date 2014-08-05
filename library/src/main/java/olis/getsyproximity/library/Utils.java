@@ -51,7 +51,7 @@ public class Utils {
             throw new IllegalArgumentException(Constants.BAD_BIRTHDAY);
         }
         try {
-            new SimpleDateFormat("YYYY-MM-dd").parse(birthday);
+            new SimpleDateFormat("yyyy-MM-dd").parse(birthday);
         } catch (ParseException e) {
             throw new IllegalArgumentException(Constants.BAD_BIRTHDAY_FORMAT);
         }

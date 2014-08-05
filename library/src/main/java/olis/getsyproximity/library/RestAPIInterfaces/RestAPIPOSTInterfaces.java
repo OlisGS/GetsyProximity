@@ -1,5 +1,7 @@
 package olis.getsyproximity.library.RestAPIInterfaces;
 
+import java.io.EOFException;
+
 import olis.getsyproximity.library.Request.BasicRequest;
 import olis.getsyproximity.library.Response.InitializeSDKResponse;
 import olis.getsyproximity.library.Response.UserLoginResponse;
@@ -29,6 +31,6 @@ public class RestAPIPOSTInterfaces {
 
     public interface UserLoginInterface {
         @POST("/sdk/user/login")
-        UserLoginResponse userLogin(@Header("X-Application-Token") String xApplicationTokenHeader, @Body BasicRequest userLoginRequest);
+        UserLoginResponse userLogin(@Header("X-Application-Token") String xApplicationTokenHeader, @Body BasicRequest userLoginRequest) throws EOFException;
     }
 }

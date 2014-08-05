@@ -1,5 +1,7 @@
 package olis.getsyproximity.library;
 
+import java.io.EOFException;
+
 import olis.getsyproximity.library.Request.BasicRequest;
 import olis.getsyproximity.library.Request.ExperiencesRequest;
 import olis.getsyproximity.library.Request.InitializeSDKRequest;
@@ -36,7 +38,11 @@ public class NetworkThread extends Thread{
         }
         else if(request instanceof UserLoginRequest) {
             RestAPIPOSTInterfaces.UserLoginInterface userLoginInterface = restAdapter.create(RestAPIPOSTInterfaces.UserLoginInterface.class);
-            basicResponse = userLoginInterface.userLogin(instanceToken, request);//EOF
+            try {
+                basicResponse = userLoginInterface.userLogin(instanceToken, request);//EOF
+            } catch (EOFException e) {
+                e.printStackTrace();
+            }
         }
         else if(request instanceof ExperiencesRequest) {
             RestAPIGETInterfaces.GetExperiences getExperiencesInterface = restAdapter.create(RestAPIGETInterfaces.GetExperiences.class);
